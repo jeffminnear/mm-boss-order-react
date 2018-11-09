@@ -1,18 +1,27 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 const imgUrl = 'https://s3-us-west-2.amazonaws.com/mm-bosses/img/'
 
 class Boss extends Component {
+    static propTypes = {
+        name: PropTypes.string,
+        classes: PropTypes.string,
+        handleClick: PropTypes.func
+    }
+
     render() {
+        const { classes, name, handleClick, order } = this.props
+
         return (
-            <div className="col boss" data-name={this.props.name} onClick={this.props.handleClick}>
+            <div className={`col boss ${classes}`} data-name={name} onClick={handleClick}>
                 <div className="img-wrapper">
-                    <img className="img-fluid" src={imgUrl + this.props.name.split(' ')[0].toLowerCase() + '.jpg'} />
+                    <img className="img-fluid" src={imgUrl + name.split(' ')[0].toLowerCase() + '.jpg'} />
                 </div>
 
-                <div className="order-number">{this.props.order}</div>
+                <div className="order-number">{order}</div>
 
-                <h6>{this.props.name}</h6>
+                <p>{name}</p>
             </div>
         )
     }

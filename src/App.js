@@ -11,6 +11,7 @@ class App extends Component {
     super(props)
 
     this.state = {
+      game: 'Mega Man',
       bosses: null
     }
   }
@@ -19,8 +20,8 @@ class App extends Component {
     this.getBosses()
   }
 
-  getBosses() {
-    axios.get('https://mm-boss-order-api.herokuapp.com/game/Mega Man 2')
+  getBosses = () => {
+    axios.get(`https://mm-boss-order-api.herokuapp.com/game/${this.state.game}`)
       .then((res) => {        
         this.setState({ bosses: res.data.sort((a, b) => a.position > b.position) })
       })
@@ -29,13 +30,13 @@ class App extends Component {
   getBossOrder = (e) => {
     e.preventDefault()
     let parent = e.target.closest('.boss')
-    axios.get('https://mm-boss-order-api.herokuapp.com/game/Mega Man 2/' + parent.dataset.name)
+    axios.get(`https://mm-boss-order-api.herokuapp.com/game/${this.state.game}/` + parent.dataset.name)
       .then((res) => {        
         this.setState({ bosses: res.data.sort((a, b) => a.position > b.position) })
       })
   }
 
-  getTopRow() {
+  getTopRow = () => {
     const { bosses } = this.state
     if (!bosses || !bosses.length || bosses.length == 0) return null
     let row
@@ -57,29 +58,29 @@ class App extends Component {
     )
   }
 
-  getMiddleRow() {
+  getMiddleRow = () => {
     const { bosses } = this.state
     if (!bosses || !bosses.length || bosses.length == 0) return null
-    let row
+    let left, right
 
     if (bosses.length < 8) {
-      row = bosses.map((boss, i) => {
-        if (i < 2 || i > 3) return null
-        return <Boss handleClick={this.getBossOrder} name={boss.name} order={boss.order} key={i} />
-      })
+      left = <Boss classes={`order-1`} handleClick={this.getBossOrder} name={bosses[2].name} order={bosses[2].order} key={2} />
+      right = <Boss classes={`order-3`} handleClick={this.getBossOrder} name={bosses[3].name} order={bosses[3].order} key={3} />
     } else {
-      row = bosses.map((boss, i) => {
-        if (i < 3 || i > 4) return null
-        return <Boss handleClick={this.getBossOrder} name={boss.name} order={boss.order} key={i} />
-      })
+      left = <Boss classes={`order-1`} handleClick={this.getBossOrder} name={bosses[3].name} order={bosses[3].order} key={3} />
+      right = <Boss classes={`order-3`} handleClick={this.getBossOrder} name={bosses[4].name} order={bosses[4].order} key={4} />
     }
     
     return (
-      <div className="row middle-row">{row}</div>
+      <div className="row middle-row">
+        {left}
+        <div className="col order-2"></div>
+        {right}
+      </div>
     )
   }
 
-  getBottomRow() {
+  getBottomRow = () => {
     const { bosses } = this.state
     if (!bosses || !bosses.length || bosses.length == 0) return null
     let row
@@ -101,13 +102,33 @@ class App extends Component {
     )
   }
 
+  getHeader = () => {
+    const options = [
+      'Mega Man',
+      'Mega Man 2'
+    ]
+
+    return (
+      <select
+        onChange={(e) => this.setState({ game: e.target.value }, () => this.getBosses())}
+      >
+        {options.map((option, i) => {
+          return <option key={i}>{option}</option>
+        })}
+      </select>
+    )
+  }
+
   render() {
     if (this.state.bosses) {
       return (
         <div className="container App">
-          {this.getTopRow()}
-          {this.getMiddleRow()}
-          {this.getBottomRow()}
+          {this.getHeader()}
+          <div className="content">
+            {this.getTopRow()}
+            {this.getMiddleRow()}
+            {this.getBottomRow()}
+          </div>
         </div>
       )
     }
@@ -121,106 +142,3 @@ class App extends Component {
 }
 
 export default App;
-
-
-// const bosses = [
-//   {
-//     "weakness": [
-//       "Time Stopper",
-//       "Crash Bomber"
-//     ],
-//     "_id": "5bdb24d5eab29034382b2070",
-//     "name": "Quick Man",
-//     "weapon": "Quick Boomerang",
-//     "game": "Mega Man 2",
-//     "position": 3,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/quick.jpg",
-//     "order": 1
-//   },
-//   {
-//     "weakness": [
-//       "Quick Boomerang",
-//       "Metal Blade"
-//     ],
-//     "_id": "5bdb23ffeab29034382b206d",
-//     "name": "Metal Man",
-//     "weapon": "Metal Blade",
-//     "game": "Mega Man 2",
-//     "position": 6,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/metal.jpg",
-//     "order": 2
-//   },
-//   {
-//     "weakness": [
-//       "Metal Blade"
-//     ],
-//     "_id": "5bdb2480eab29034382b206f",
-//     "name": "Bubble Man",
-//     "weapon": "Bubble Lead",
-//     "game": "Mega Man 2",
-//     "position": 1,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/bubble.jpg",
-//     "order": 3
-//   },
-//   {
-//     "weakness": [
-//       "Bubble Lead"
-//     ],
-//     "_id": "5bdb2589eab29034382b2073",
-//     "name": "Heat Man",
-//     "weapon": "Atomic Fire",
-//     "game": "Mega Man 2",
-//     "position": 4,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/heat.jpg",
-//     "order": 4
-//   },
-//   {
-//     "weakness": [
-//       "Atomic Fire"
-//     ],
-//     "_id": "5bdb25a1eab29034382b2074",
-//     "name": "Wood Man",
-//     "weapon": "Leaf Shield",
-//     "game": "Mega Man 2",
-//     "position": 5,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/wood.jpg",
-//     "order": 5
-//   },
-//   {
-//     "weakness": [
-//       "Leaf Shield"
-//     ],
-//     "_id": "5bdb2462eab29034382b206e",
-//     "name": "Air Man",
-//     "weapon": "Air Shooter",
-//     "game": "Mega Man 2",
-//     "position": 2,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/air.jpg",
-//     "order": 6
-//   },
-//   {
-//     "weakness": [
-//       "Air Shooter"
-//     ],
-//     "_id": "5bdb24fdeab29034382b2071",
-//     "name": "Crash Man",
-//     "weapon": "Crash Bomber",
-//     "game": "Mega Man 2",
-//     "position": 8,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/crash.jpg",
-//     "order": 7
-//   },
-//   {
-//     "weakness": [
-//       "Metal Blade",
-//       "Crash Bomber"
-//     ],
-//     "_id": "5bdb2519eab29034382b2072",
-//     "name": "Flash Man",
-//     "weapon": "Time Stopper",
-//     "game": "Mega Man 2",
-//     "position": 7,
-//     "img": "https://s3-us-west-2.amazonaws.com/mm-bosses/img/flash.jpg",
-//     "order": 8
-//   }
-// ].sort((a, b) => a.position > b.position)
