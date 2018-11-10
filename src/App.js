@@ -23,7 +23,7 @@ class App extends Component {
   getBosses = () => {
     axios.get(`https://mm-boss-order-api.herokuapp.com/game/${this.state.game}`)
       .then((res) => {        
-        this.setState({ bosses: res.data.sort((a, b) => a.position > b.position) })
+        this.setState({ bosses: res.data.sort((a, b) => a.position > b.position ? 1 : -1) })
       })
   }
 
@@ -32,7 +32,7 @@ class App extends Component {
     let parent = e.target.closest('.boss')
     axios.get(`https://mm-boss-order-api.herokuapp.com/game/${this.state.game}/` + parent.dataset.name)
       .then((res) => {        
-        this.setState({ bosses: res.data.sort((a, b) => a.position > b.position) })
+        this.setState({ bosses: res.data.sort((a, b) => a.position > b.position ? 1 : -1) })
       })
   }
 
