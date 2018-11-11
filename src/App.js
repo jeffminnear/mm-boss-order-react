@@ -11,8 +11,9 @@ class App extends Component {
     super(props)
 
     this.state = {
-      game: 'Mega Man',
-      bosses: null
+      game: 'Mega Man 2',
+      bosses: null,
+      text: 'Touch the boss you defeated with the Mega Buster to see what order to take on the rest.'
     }
   }
 
@@ -104,18 +105,20 @@ class App extends Component {
 
   getHeader = () => {
     const options = [
-      'Mega Man',
+      // 'Mega Man',
       'Mega Man 2'
     ]
 
     return (
-      <select
-        onChange={(e) => this.setState({ game: e.target.value }, () => this.getBosses())}
-      >
-        {options.map((option, i) => {
-          return <option key={i}>{option}</option>
-        })}
-      </select>
+      <header>
+        <select
+          onChange={(e) => this.setState({ game: e.target.value }, () => this.getBosses())}
+        >
+          {options.map((option, i) => {
+            return <option key={i}>{option}</option>
+          })}
+        </select>
+      </header>
     )
   }
 
@@ -128,6 +131,7 @@ class App extends Component {
             {this.getTopRow()}
             {this.getMiddleRow()}
             {this.getBottomRow()}
+            {this.state.text}
           </div>
         </div>
       )
